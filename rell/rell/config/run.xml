@@ -1,0 +1,30 @@
+<run wipe-db="true">
+  <nodes>
+    <config src="node-config.properties" add-signers="false" />
+    <test-config src="node-config-test.properties" />
+  </nodes>
+  <chains>
+    <chain name="bear" iid="1">
+        <config height="0">
+          <app module="bear">
+			<args module="bear">
+                        <arg key="asset_name"><string>CHROMA</string></arg>
+                        <arg key="admin_pubkey"><string>031b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f</string></arg>
+            </args>
+			<args module="ft3.core">
+              <arg key="my_blockchain_name"><string>Originals</string></arg>
+              <arg key="my_blockchain_website"><string>https://chromia.com</string></arg>
+              <arg key="my_blockchain_description"><string>Chromia Originals</string></arg>
+              <arg key="rate_limit_active"><int>0</int></arg>
+              <arg key="rate_limit_max_points"><int>10</int></arg>
+              <arg key="rate_limit_recovery_time"><int>30000</int></arg>
+              <arg key="rate_limit_points_at_account_creation"><int>5</int></arg>
+            </args>
+          </app>
+          <gtv src="config.template.xml"/>
+      </config>
+      <test module="dip.tests" />
+      <test module="originals.tests" />
+    </chain>
+  </chains>
+</run>

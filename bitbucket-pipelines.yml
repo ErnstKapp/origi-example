@@ -1,0 +1,7 @@
+pipelines:
+  pull-requests:
+    '**':
+      - step:
+          script:
+            - docker-compose -f dockers/rell-test.yml up --abort-on-container-exit --exit-code-from originals-rell-postchain
+            - docker-compose -f dockers/rell-test.yml down

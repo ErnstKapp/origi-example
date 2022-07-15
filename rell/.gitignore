@@ -1,0 +1,4 @@
+target/
+postchain.pid
+logs/
+src/ft3

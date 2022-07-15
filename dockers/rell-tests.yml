@@ -1,0 +1,26 @@
+version: "0.1"
+
+services:
+  originals-rell-postgres:
+    image: postgres:14.1-alpine
+    container_name: originals-rell-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: postchain
+      POSTGRES_USER: postchain
+      POSTGRES_PASSWORD: postchain
+
+  originals-rell-postchain:
+    image: registry.gitlab.com/chromaway/postchain-distribution/chromaway/postchain-test-dapp:3.5.0
+    container_name: originals-rell-postchain
+    command:
+      - test
+    ports:
+      - "7740:7740"
+    depends_on:
+      - originals-rell-postgres
+    volumes:
+      - ../rell:/opt/chromaway/rell
+    environment:
+      POSTCHAIN_DB_URL: jdbc:postgresql://originals-rell-postgres/postchain
+      CHAIN_CONF: /opt/chromaway/rell/config/rell-test/run.xml

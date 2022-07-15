@@ -1,0 +1,101 @@
+query get_original(instance) {
+  return Mapper.map_instance(instance, [
+    Mapper.map_all_attributes(),
+    OMapper.map_original_meta([OMapper.type.id])
+  ]);
+}
+
+/* 
+
+query find_originals_by_owner(
+  owner_id: byte_array, 
+  interface: name,
+  meta: list<name>,
+  attributes: list<name>
+) {
+	
+  val original_ids = Ownership.find_all_original_ids_with_interface(
+    owner_id, 
+    Interface.get(interface), 
+    100, 
+    0
+  );
+  
+  val attribute_names = attributes @* {} (Attribute.from_text($));
+  val meta_names = OMapper.type.values() @* { $.name in meta };
+  
+  return original_ids @* {} (
+    Mapper.map_instance(Id.get_by_id($).instance, [
+      Mapper.map_attributes(attribute_names),
+      OMapper.map_original_meta(meta_names)
+    ])
+  );
+}
+* 
+*/
+
+query find_originals_by_owner(
+  
+) {
+  val auth_descriptor = admin_auth_descriptor();
+  var account_id = auth_descriptor.hash();
+  val account = ft3.acc.account @? { .id == account_id };
+  val owner_id: byte_array;
+  if (account??){
+  	owner_id = account.id;
+  }
+  else{
+  	owner_id = auth_descriptor.hash();
+  }
+  val interface = IBear.get();
+  val meta = list<name>();       
+  val attributes = ["IBear.skin", "IOriginal.name", "IOriginal.creator_name", "IOriginal.creator_id"];
+  val original_ids = Ownership.find_all_original_ids_with_interface(
+    owner_id, 
+    interface, 
+    100, 
+    0
+  );
+  
+  val attribute_names = attributes @* {} (Attribute.from_text($));
+  val meta_names = OMapper.type.values() @* { $.name in meta };
+  val own = owner_id.to_hex();
+  print(own);
+  print(original_ids);
+  return original_ids @* {} (
+    Mapper.map_instance(Id.get_by_id($).instance, [
+      Mapper.map_attributes(attribute_names),
+      OMapper.map_original_meta(meta_names)
+    ])
+  );
+}
+
+query get_last_n_minted_originals(auth_id) {
+	
+  val account = do_auth(auth_id, ["A"]);	
+  val account_id = account.id;
+  val original_account_id = Ft3Helper.get_original_account_id(account_id);
+  val locked_account_id = Ft3Helper.get_locked_account_id(account_id);
+  
+  val originals = (a: Id.asset_instance, b: ft3.balance) @* {
+  	b.account.id in [original_account_id, locked_account_id],
+  	a.asset.id == b.asset.id,
+  	b.amount > 0
+  } (@omit @sort_desc a.instance.rowid, a.instance) limit 5;
+  
+  
+  print("id used for query: " + account_id);
+  print(originals);
+  
+  return originals @* {} (
+    Mapper.map_instance($, [
+      Mapper.map_all_attributes(),
+      OMapper.map_original_meta([
+        OMapper.type.id, 
+        OMapper.type.interfaces
+      ])
+    ])
+  );		
+}
+
+
