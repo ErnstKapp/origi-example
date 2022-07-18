@@ -70,10 +70,10 @@ query find_originals_by_owner(
   );
 }
 
-query get_last_n_minted_originals(auth_id) {
+query get_last_n_minted_originals(account_id: byte_array) {
 	
-  val account = do_auth(auth_id, ["A"]);	
-  val account_id = account.id;
+  //val account = do_auth(auth_id, ["A"]);	
+  //val account_id = account.id;
   val original_account_id = Ft3Helper.get_original_account_id(account_id);
   val locked_account_id = Ft3Helper.get_locked_account_id(account_id);
   

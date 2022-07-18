@@ -1,0 +1,53 @@
+
+namespace IBear{
+	
+	val interface = "com.chromia.bear.IBear";
+	
+	
+	function dependencies() = [
+		chromia.INonFungibleOriginal.get(),
+		chromia.ITradable.get()
+	];
+	
+	
+	val age = Attribute.I(interface, name="age");
+	val t_shirt = Attribute.I(interface, name="t_shirt");
+	
+	
+	function register(ft3.account) {
+		InterfaceFactory.new(interface,
+			[
+				age: Type(Integer.T()),
+				t_shirt:Type(Instance.T(), [ImplementsInterface(ITshirt.interface), OwnerMutable(), Optional()])
+			],
+			dependencies(),
+			account = account
+		);
+	}
+	
+	function get() = Interface.get(interface);
+	function setTshirt(Bear_instance: instance,Tshirt_instance: instance) = Instance.set_value(Bear_instance, t_shirt,Tshirt_instance);
+	
+}
+
+namespace ITshirt {
+	val interface = "com.chromia.bear.ITshirt";
+
+	function dependencies() = [ 
+    	chromia.INonFungibleOriginal.get(),
+    	chromia.ITradable.get()
+	];
+
+	val color = Attribute.I(interface, name="color");
+
+	function register(ft3.account) {
+		InterfaceFactory.new(interface,
+		[
+			color: Type(Text.T())
+		],
+		dependencies(),
+		account = account
+		);
+	}
+	function get() = Interface.get(interface);
+}
