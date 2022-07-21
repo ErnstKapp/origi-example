@@ -49,14 +49,12 @@ operation make_new_tshirt(auth_id, color: text){
 	);
 }
 
-operation give_bear_tshirt(account_id: byte_array, auth_descriptor_id: byte_array)
+operation give_bear_tshirt(auth_id)
 	{
-	val account = require(
-    	ft3.acc.account @? { .id == account_id },
-    	"Account not found: " + account_id
-  		);
-
-  	ft3.acc.require_auth(account, auth_descriptor_id, list<text>());
+	
+	val account = do_auth(auth_id, ["T"]);
+	val account_id = account.id;
+  	
 
   	val original_bear_ids = Ownership.find_all_original_ids_with_interface(
     account_id,
@@ -77,6 +75,25 @@ operation give_bear_tshirt(account_id: byte_array, auth_descriptor_id: byte_arra
   	val shirt = Id.get_instance(original_shirt_ids[0]);	
 	update_tshirt(shirt, bear);
 	}
+	
+operation transfer_original(from_account_id: byte_array, to_account_id: byte_array){
+	val from_account = require(
+    	ft3.acc.account @? { .id == from_account_id },
+    	"Account not found: " + from_account_id
+  		);
+  	
+  	val original_shirt_ids = Ownership.find_all_original_ids_with_interface(
+    from_account_id,
+    ITshirt.get(),
+    100,
+    0
+  	);
+  	
+  	val shirt = Id.get_instance(original_shirt_ids[0]);	
+  	
+  	Ownership.transfer(from_account, shirt, to_account_id);
+  	
+}
 
 function update_tshirt(Tshirt_instance: instance, bear_instance: instance)
 	{

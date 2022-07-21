@@ -1,3 +1,5 @@
+import bear;
+
 entity instance {
 	is_prototype: boolean = false;
 }
@@ -8,6 +10,7 @@ entity instance_dclass {
 	key instance, dclass;
 	direct: boolean;
 }
+
 	
 entity attribute {
 	key Interface.dclass, name;
